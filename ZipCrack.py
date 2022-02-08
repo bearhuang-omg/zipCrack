@@ -16,8 +16,9 @@ class ZipCracker:
     __lengths = None
     __pool = None
     __zfile = None
+    __start = None
 
-    def __init__(self, filePath, minLength=1, maxLength=10, maxThread=10):
+    def __init__(self, filePath, minLength=1, maxLength=10, maxThread=50):
         self.filePath = filePath
         self.minLength = minLength
         self.maxLength = maxLength
@@ -26,11 +27,12 @@ class ZipCracker:
         # chr(97) -> 'a' 这个变量保存了密码包含的字符集
         self.__dictionaries = [chr(i) for i in
                                chain(
-                                   # range(97, 123),  # a - z
-                                   # range(65, 91),  # A - Z
+                                   range(97, 123),  # a - z
+                                   range(65, 91),  # A - Z
                                    range(48, 58))]  # 0 - 9
         self.__pool = ThreadPoolExecutor(max_workers=self.maxThread)
         self.__zfile = ZipFile(self.filePath, 'r')  # 很像open
+        self.__dictionaries.extend(['.', '#', '$', '&', '@', '!', '*', '(', ')', '%', '^', '_', '-', '+', '/', '?', '~', ';'])
 
     def __all_passwd(self, dictionaries: List[str], maxlen: int):
         # 返回由 dictionaries 中字符组成的所有长度为 maxlen 的字符串
@@ -50,13 +52,16 @@ class ZipCracker:
         try:
             self.__zfile.extractall(path='.', pwd=pwd.encode('utf-8'))  # 密码输入错误的时候会报错
             print(f"Password is: {pwd}")  # 将正确的密码输出到控制台
+            now = time.time()
+            print("timeCost:", now - self.__start)
             self.__isCracked = True
             return True
         except:
+            print(f"Password is not: {pwd}")
             return False
 
     def start(self):
-        start = time.time()
+        self.__start = time.time()
         total = sum(len(self.__dictionaries) ** k for k in self.__lengths)  # 密码总数
         range = tqdm(chain.from_iterable(self.__all_passwd(self.__dictionaries, maxlen) for maxlen in self.__lengths),
                      total=total)
@@ -65,6 +70,4 @@ class ZipCracker:
             if self.__isCracked == False:
                 self.__pool.submit(self.__crack, pwd)
             else:
-                now = time.time()
-                print("timeCost:", now - start)
                 break
