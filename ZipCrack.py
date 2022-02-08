@@ -18,7 +18,7 @@ class ZipCracker:
     __zfile = None
     __start = None
 
-    def __init__(self, filePath, minLength=1, maxLength=10, maxThread=50):
+    def __init__(self, filePath, minLength=1, maxLength=10, maxThread=20):
         self.filePath = filePath
         self.minLength = minLength
         self.maxLength = maxLength
