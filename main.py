@@ -1,7 +1,11 @@
+from itertools import chain
+from typing import List
+
+from tqdm import tqdm
+
 import ZipCrack
 
 if __name__ == '__main__':
-    print("hello world!")
-    file_name = "/Users/huangbei/Desktop/未命名文件夹/test.zip"
+    file_name = "/Users/huangbei/Desktop/未命名文件夹/test.7z"
     zipCrack = ZipCrack.ZipCracker(file_name,4,4)
     zipCrack.start()
