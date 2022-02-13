@@ -1,8 +1,3 @@
-from itertools import chain
-from typing import List
-
-from tqdm import tqdm
-
 import ZipCrack
 
 if __name__ == '__main__':
