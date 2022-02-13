@@ -17,8 +17,9 @@ class ZipCracker:
     __total = None
     __current = 0
     __lock = None
+    __threads = 5
 
-    def __init__(self, filePath: str, minLength=1, maxLength=10):
+    def __init__(self, filePath: str, minLength=1, maxLength=10,threads = 5):
         self.filePath = filePath
         self.minLength = minLength
         self.maxLength = maxLength
@@ -39,6 +40,7 @@ class ZipCracker:
 
         self.__total = sum(len(self.__dictionaries) ** k for k in self.__lengths)  # 密码总数
         self.__iter = chain.from_iterable(self.__all_passwd(self.__dictionaries, maxlen) for maxlen in self.__lengths)
+        self.__threads = threads
 
     def __all_passwd(self, dictionaries: List[str], maxlen: int):
         # 返回由 dictionaries 中字符组成的所有长度为 maxlen 的字符串
@@ -112,7 +114,7 @@ class ZipCracker:
 
     def start(self):
         _thread.start_new_thread(self.__time, ())
-        for i in range(0, 15):
+        for i in range(0, self.__threads+1):
             _thread.start_new_thread(self.__crack, ())
 
         while (True):
